@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: userapp
+  labels: 
+    app: user
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      containers:
+      - name: todo
+        image: vdocker0123/user-app:01
+        ports:
+        - containerPort: 8080   
+        env:
+        - name: USER_APP_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: todo-configmap
+              key: user-app-port          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user
+  type: ClusterIP
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080        
